@@ -15,5 +15,5 @@ DATASETS:
     V2_02_medium/mav0,
     V2_03_difficult/mav0,
   ]
-VO_MODEL: ./models/stereo_cvt_tartanvo_1914.pkl
+VO_MODEL: ./models/tartanvo_1914.pkl
 POSE_MODEL: null
