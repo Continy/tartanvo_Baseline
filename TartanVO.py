@@ -45,13 +45,12 @@ class TartanVO(object):
 
         # load the whole model
         if model_name.endswith('.pkl'):
-            modelname = 'models/' + model_name
-            self.load_model(self.vonet, modelname)
+            self.load_model(self.vonet, model_name)
 
         self.vonet.cuda()
 
         self.test_count = 0
-        self.pose_std = np.array([ 0.13,  0.13,  0.13,  0.013 ,  0.013,  0.013], dtype=np.float32) # the output scale factor
+        self.pose_std = torch.tensor([ 0.13,  0.13,  0.13,  0.013 ,  0.013,  0.013]).cuda() # the output scale factor
         self.flow_norm = 20 # scale factor for flow
 
     def load_model(self, model, modelname):
@@ -86,25 +85,17 @@ class TartanVO(object):
         self.vonet.eval()
 
         with torch.no_grad():
-            starttime = time.time()
             flow, pose = self.vonet(inputs)
-            inferencetime = time.time()-starttime
-            # import ipdb;ipdb.set_trace()
-            posenp = pose.data.cpu().numpy()
-            posenp = posenp * self.pose_std # The output is normalized during training, now scale it back
-            flownp = flow.data.cpu().numpy()
-            flownp = flownp * self.flow_norm
+            pose = pose * self.pose_std # The output is normalized during training, now scale it back
+            flow = flow * self.flow_norm
 
         # calculate scale from GT posefile
         if 'motion' in sample:
             motions_gt = sample['motion']
             scale = np.linalg.norm(motions_gt[:,:3], axis=1)
-            trans_est = posenp[:,:3]
+            trans_est = pose[:,:3]
             trans_est = trans_est/np.linalg.norm(trans_est,axis=1).reshape(-1,1)*scale.reshape(-1,1)
-            posenp[:,:3] = trans_est 
-        else:
-            print('    scale is not given, using 1 as the default scale value..')
+            pose[:,:3] = trans_est 
 
-        print("{} Pose inference using {}s: \n{}".format(self.test_count, inferencetime, posenp))
-        return posenp, flownp
+        return pose, flow
 

@@ -48,6 +48,5 @@ class VONet(nn.Module):
         flow = self.flowNet(x[0:2])
         flow_input = torch.cat( ( flow, x[2] ), dim=1 )        
         pose = self.flowPoseNet( flow_input )
-
         return flow, pose
 

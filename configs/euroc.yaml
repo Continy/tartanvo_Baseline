@@ -1,0 +1,19 @@
+#
+ROOT: /data2/datasets/yuhengq/Euroc
+TYPE: euroc
+DATASETS:
+  [
+    MH_01_easy/mav0,
+    MH_02_easy/mav0,
+    MH_03_medium/mav0,
+    MH_04_difficult/mav0,
+    MH_05_difficult/mav0,
+    V1_01_easy/mav0,
+    V1_02_medium/mav0,
+    V1_03_difficult/mav0,
+    V2_01_easy/mav0,
+    V2_02_medium/mav0,
+    V2_03_difficult/mav0,
+  ]
+VO_MODEL: ./models/stereo_cvt_tartanvo_1914.pkl
+POSE_MODEL: null
