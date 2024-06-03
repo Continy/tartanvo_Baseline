@@ -54,9 +54,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config',
                         type=str,
-                        default='configs/local_tartanv1.yaml')
+                        default='configs/kitti.yaml')
     parser.add_argument('--savepath', type=str, default='./Results')
-    parser.add_argument('--data_type', type=str, default='v1')
+    parser.add_argument('--data_type', type=str, default='kitti')
 
     cfg = parser.parse_args()
     args = build_cfg(cfg.config)

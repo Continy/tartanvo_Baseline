@@ -358,6 +358,52 @@ class TrajFolderDatasetBase(Dataset):
 
         del loader
 
+class KITTITrajFolderLoader:
+
+    def __init__(self, datadir):
+
+        ############################## load images ######################################################################
+        imgfolder = datadir + '/image_2'
+        self.has_imu = False
+        files = listdir(imgfolder)
+        self.rgbfiles = [(imgfolder + '/' + ff) for ff in files
+                         if (ff.endswith('.png') or ff.endswith('.jpg'))]
+        self.rgbfiles.sort()
+        self.rgb_dts = np.ones(len(self.rgbfiles), dtype=np.float32) * 0.1
+        self.rgb_ts = np.array([i for i in range(len(self.rgbfiles))],
+                               dtype=np.float64) * 0.1
+
+        ############################## load stereo right images ######################################################################
+        if isdir(datadir + '/image_3'):
+            imgfolder = datadir + '/image_3'
+            files = listdir(imgfolder)
+            self.rgbfiles_right = [
+                (imgfolder + '/' + ff) for ff in files
+                if (ff.endswith('.png') or ff.endswith('.jpg'))
+            ]
+            self.rgbfiles_right.sort()
+        else:
+            self.rgbfiles_right = None
+
+        datadir_split = datadir.split('/')
+        scene = datadir_split[-1]
+        if scene == '00' or scene == '01' or scene == '02':
+            self.intrinsic = np.array([718.856, 718.856, 607.1928, 185.2157],
+                                    dtype=np.float32)
+        elif scene == '03':
+            self.intrinsic = np.array([721.5377, 721.5377, 609.5593, 172.854],
+                                    dtype=np.float32)
+        else:
+            self.intrinsic = np.array([707.0912, 707.0912, 601.8873, 183.1104],
+                                    dtype=np.float32)
+        self.intrinsic_right = self.intrinsic
+        self.right2left_pose = pp.SE3([0, 0.53715, 0, 0, 0, 0,
+                                       1]).to(dtype=torch.float32)
+        # self.right2left_pose = np.array([0, 0.25, 0,   0, 0, 0, 1], dtype=np.float32)
+        self.require_undistort = False
+
+        self.poses = None
+        self.vels = None
 
 class TrajFolderDataset(TrajFolderDatasetBase):
 
